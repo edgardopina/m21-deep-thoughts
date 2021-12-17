@@ -1,5 +1,9 @@
 const { User, Thought } = require('../models'); //* import models
 
+const { AuthenticationError } = require('apollo-server-express');
+
+const { signToken } = require('../utils/auth');
+
 //! the resolvers' names are the same names of the query or mutation that they are resolvers for
 //* there are FOUR parameters that can be passed throug in each query
 //* 1. parent - This is if we used nested resolvers to handle more complicated actions, as it would hold the reference
@@ -14,6 +18,16 @@ const { User, Thought } = require('../models'); //* import models
 //*           but it can be implemented for more advanced uses.
 const resolvers = {
    Query: {
+      me: async (parent, args, context) => {
+         if (context.user) {
+            const userData = await User.findOne({}) //
+               .select('-__v -password')
+               .populate('thoughts')
+               .populate('friends');
+            return userData;
+         }
+         throw new AuthenticationError('You are not logged in.');
+      },
       //* GET all users
       users: async () => {
          return User.find() //
@@ -36,6 +50,27 @@ const resolvers = {
       //* GET one thoughts by user _id
       thought: async (parent, { _id }) => {
          return Thought.findOne({ _id });
+      },
+   },
+   Mutation: {
+      //* add users to database
+      addUser: async (parent, args) => {
+         const user = await User.create(args); //* create user with Mongoose create(args)
+         const token = signToken(user);
+         return { token, user };
+      },
+      //* login resolver
+      login: async (parent, { email, password }) => {
+         const user = await User.findOne({ email });
+         if (!user) {
+            throw new AuthenticationError('Incorrect credentials');
+         }
+         const correctPw = await user.isCorrectPassword(password);
+         if (!correctPw) {
+            throw new AuthenticationError('Incorrect credentials');
+         }
+         const token = signToken(user);
+         return { token, user };
       },
    },
 };

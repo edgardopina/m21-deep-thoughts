@@ -3,6 +3,9 @@ const express = require('express');
 const { ApolloServer } = require('apollo-server-express'); //* import Apollo server from
 const { typeDefs, resolvers } = require('./schemas');
 const { authMiddleware } = require('./utils/auth');
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '/.env') });
+// console.log('Server', require('dotenv').config());
 
 //! this 'require' is to downgrade to previous playground functionality
 // const {
@@ -26,7 +29,9 @@ const startServer = async () => {
       // ],
       typeDefs,
       resolvers,
-      // context: authMiddleware,
+      //* This line ensures that every request performs an authentication check, and the updated request object will 
+      //* be passed to the resolvers as the context.
+      context: authMiddleware,
    });
 
    await server.start(); //* START the Apollo server
