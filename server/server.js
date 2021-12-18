@@ -2,18 +2,8 @@ const express = require('express');
 
 const { ApolloServer } = require('apollo-server-express'); //* import Apollo server from
 const { typeDefs, resolvers } = require('./schemas');
-const { authMiddleware } = require('./utils/auth');
-const path = require('path')
-require('dotenv').config({ path: path.resolve(__dirname, '/.env') });
-// console.log('Server', require('dotenv').config());
-
-//! this 'require' is to downgrade to previous playground functionality
-// const {
-//   ApolloServerPluginLandingPageGraphQLPlayground,
-//   ApolloServerPluginLandingPageDisabled,
-// } = require('apollo-server-core');
-
 const db = require('./config/connection');
+const { authMiddleware } = require('./utils/auth');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -21,12 +11,6 @@ const app = express();
 //* create a new Apollo server and pass in the schema data
 const startServer = async () => {
    const server = new ApolloServer({
-      //! this 'plugins' is to downgrade to previous playground functionality
-      // plugins: [
-      //    process.env.NODE_ENV === 'production'
-      //       ? ApolloServerPluginLandingPageDisabled()
-      //       : ApolloServerPluginLandingPageGraphQLPlayground(),
-      // ],
       typeDefs,
       resolvers,
       //* This line ensures that every request performs an authentication check, and the updated request object will 
@@ -52,6 +36,6 @@ app.use(express.json());
 
 db.once('open', () => {
    app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
+      console.log('API server running on port ',PORT,'!');
    });
 });

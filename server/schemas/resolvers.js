@@ -1,7 +1,6 @@
 const { User, Thought } = require('../models'); //* import models
 
 const { AuthenticationError } = require('apollo-server-express');
-
 const { signToken } = require('../utils/auth');
 
 //! the resolvers' names are the same names of the query or mutation that they are resolvers for
@@ -71,6 +70,26 @@ const resolvers = {
          }
          const token = signToken(user);
          return { token, user };
+      },
+      //* addThought resolver
+      addThought: async (parent, args, context) => {
+         //* validates that only logged-in users can use this mutation
+         //* the decoded JWT is only added to context if the verification passes. The token includes the user's
+         //* username, email, and _id properties, which become properties of context.user
+         if (context.user) {
+            console.log("🚀 ~ file: resolvers.js ~ line 81 ~ addThought: ~ context.user", context.user)
+            const thought = await Thought.create({ ...args, username: context.user.username });
+
+            await User.findByIdAndUpdate(
+               { _id: context.user._id },
+               { $push: { thoughts: thought._id } },
+               { new: true }
+            );
+
+            return thought;
+         }
+
+         throw new AuthenticationError('You need to be logged in!');
       },
    },
 };
