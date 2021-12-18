@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'; //* React router
+
 
 //* ApolloProvider - is a special type of React component that we'll use to provide data to all of the other components.
 //* ApolloClient - is a constructor function that will help initialize the connection to the GraphQL API server.
@@ -42,8 +43,9 @@ function App() {
                      <Route exact path='/' component={Home} />
                      <Route exact path='/login' component={Login} />
                      <Route exact path='/signup' component={Signup} />
-                     <Route exact path='/profile' component={Profile} />
-                     <Route exact path='/thought' component={SingleThought} />
+                     {/* '/:username?' - question mark indicates that this partameters is OPTIONAL */}
+                     <Route exact path='/profile/:username?' component={Profile} />
+                     <Route exact path='/thought/:id' component={SingleThought} />
 
                      <Route component={NoMatch} />
                   </Switch>

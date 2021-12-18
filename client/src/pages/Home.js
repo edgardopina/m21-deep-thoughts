@@ -17,7 +17,7 @@ const Home = () => {
    const { loading, data } = useQuery(QUERY_THOUGHTS);
 
    //* we use 'optional chaining (?.)' (browser side ONLY) TO CHECK IF A PROPERTY IS NOT NULLish (null or undefined)
-   //* EQUIVALENT: if(data.thoughts) {const thoughts = data.thoughts} else {const thoughts = []};
+   //* EQUIVALENT: if(data.thoughts) {thoughts = data.thoughts} else { thoughts = []};
    const thoughts = data?.thoughts || [];
 
    return (
