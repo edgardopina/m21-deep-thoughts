@@ -1,6 +1,7 @@
 const express = require('express');
+const path = require('path');
 
-const { ApolloServer } = require('apollo-server-express'); //* import Apollo server from
+const { ApolloServer } = require('apollo-server-express'); //* import Apollo server 
 const { typeDefs, resolvers } = require('./schemas');
 const db = require('./config/connection');
 const { authMiddleware } = require('./utils/auth');
@@ -13,7 +14,7 @@ const startServer = async () => {
    const server = new ApolloServer({
       typeDefs,
       resolvers,
-      //* This line ensures that every request performs an authentication check, and the updated request object will 
+      //* This line ensures that every request performs an authentication check, and the updated request object will
       //* be passed to the resolvers as the context.
       context: authMiddleware,
    });
@@ -34,8 +35,20 @@ startServer(); //* INITIALIZE the Apollo server
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+//* serve up static assets (React front-end code)
+//* if the Node environment is in production then the Express.js server to serve any files in the React application's
+//* build directory in the client folder
+if (process.env.NODE_ENV === 'production') {
+   app.use(express.static(path.join(__dirname, '../client/build')));
+}
+//* create a wildcard GET route for the server. If we make a GET request to any location on the server that doesn't
+//* have an explicit route defined, respond with the production - ready React front - end code.
+app.get('*', (req, res) => {
+   res.sendFile(path.join(__dirname, '../client/build/index.html'));
+});
+
 db.once('open', () => {
    app.listen(PORT, () => {
-      console.log('API server running on port ',PORT,'!');
+      console.log('API server running on port ', PORT, '!');
    });
 });
