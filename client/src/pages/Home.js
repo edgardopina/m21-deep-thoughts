@@ -7,7 +7,7 @@ import { QUERY_THOUGHTS } from '../utils/queries';
 import ThoughtList from '../components/ThoughtList';
 
 const Home = () => {
-   //* use useQuery hook to make query request;
+   //! use useQuery() hook to make query request;
    //* useQuery is asynchronous, just like using fetch(). @apollo/client library provide 'loading' and 'data properties
 
    //* loading - indicates that the request isn't done just yet.
