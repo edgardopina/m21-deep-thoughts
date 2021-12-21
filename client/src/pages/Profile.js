@@ -4,14 +4,29 @@ import React from 'react';
 //* used location.replace() in the past, but it leverages React Router's ability to not reload the browser!
 import { Redirect, useParams } from 'react-router-dom';
 
-import { useQuery } from '@apollo/client';
+import { ADD_FRIEND } from '../utils/mutations';
+import { useQuery, useMutation } from '@apollo/client'; //* hooks
+
 import { QUERY_USER, QUERY_ME } from '../utils/queries';
 import ThoughtList from '../components/ThoughtList';
 import FriendList from '../components/FriendList';
+import ThoughtForm from '../components/ThoughtForm';
 
 import Auth from '../utils/auth';
 
 const Profile = (props) => {
+   //* Add Friend button onClick handler
+   const handleClick = async () => {
+      try {
+         await addFriend({
+            variables: { id: user._id },
+         });
+      } catch (err) {
+         console.error(err);
+      }
+   };
+
+   const [addFriend] = useMutation(ADD_FRIEND);
    const { username: userParam } = useParams();
 
    const { loading, data } = useQuery(userParam ? QUERY_USER : QUERY_ME, {
@@ -31,19 +46,23 @@ const Profile = (props) => {
    if (loading) {
       return <div>Loading...</div>;
    }
-   
+
    if (!user?.username) {
-      return (
-         <h4>You need to be logged in to see this page. Use the navigation links above to sign up or log in!</h4>
-      );
+      return <h4>You need to be logged in to see this page. Use the navigation links above to sign up or log in!</h4>;
    }
 
+   //* conditionally renders Add Friend button for other users only
    return (
       <div>
          <div className='flex-row mb-3'>
             <h2 className='bg-dark text-secondary p-3 display-inline-block'>
                Viewing {userParam ? `${user.username}'s` : 'your'} profile.
             </h2>
+            {userParam && (
+               <button className='btn ml-auto' onClick={handleClick}>
+                  Add Friend
+               </button>
+            )}
          </div>
 
          <div className='flex-row justify-space-between mb-3'>
@@ -55,6 +74,7 @@ const Profile = (props) => {
                <FriendList username={user.username} friendCount={user.friendCount} friends={user.friends}></FriendList>
             </div>
          </div>
+         <div className='mb-3'>{!userParam && <ThoughtForm />}</div>
       </div>
    );
 };

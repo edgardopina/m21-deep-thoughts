@@ -7,6 +7,7 @@ import { QUERY_THOUGHTS, QUERY_ME_BASIC } from '../utils/queries';
 import ThoughtList from '../components/ThoughtList';
 import Auth from '../utils/auth'; //! to check the logged-in status of a USER
 import FriendList from '../components/FriendList';
+import ThoughtForm from '../components/ThoughtForm';
 
 const Home = () => {
    //! use useQuery() hook to make query request;
@@ -18,7 +19,7 @@ const Home = () => {
 
    //* use object destructuring to extract `data` from the `useQuery` Hook's response and rename it `userData` to be more descriptive
    const { data: userData } = useQuery(QUERY_ME_BASIC);
-   console.log("🚀 ~ file: Home.js ~ line 21 ~ Home ~ userData", userData)
+   console.log('🚀 ~ file: Home.js ~ line 21 ~ Home ~ userData', userData);
 
    //* we use 'optional chaining (?.)' (browser side ONLY) TO CHECK IF A PROPERTY IS NOT NULLish (null or undefined)
    //* EQUIVALENT: if(data.thoughts) {thoughts = data.thoughts} else { thoughts = []};
@@ -26,10 +27,16 @@ const Home = () => {
 
    const loggedIn = Auth.loggedIn();
 
-   //* if the user is logged in, it'll only span eight columns,
+   //* if the user is logged in, it'll only span eight columns
+   //* if the user is logged in, it'll render the ThoughtForm component
    return (
       <main>
          <div className='flex-row justify-space-between'>
+            {loggedIn && (
+               <div className='col-12 mb-3'>
+                  <ThoughtForm />
+               </div>
+            )}
             <div className={`col-12 mb-3 ${loggedIn && 'col-lg-8'}`}>
                {loading ? (
                   <div>Loading...</div>
