@@ -41,6 +41,7 @@ app.use(express.json());
 if (process.env.NODE_ENV === 'production') {
    app.use(express.static(path.join(__dirname, '../client/build')));
 }
+
 //* create a wildcard GET route for the server. If we make a GET request to any location on the server that doesn't
 //* have an explicit route defined, respond with the production-ready React frontend code.
 app.get('*', (req, res) => {
